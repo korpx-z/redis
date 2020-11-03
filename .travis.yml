@@ -10,7 +10,7 @@ env:
     - TAG="$REPO:6.0"
 before_script:
   - docker login quay.io -u $ROBOT -p $ROBOT_TOKEN
-  - cd $TEST_DIR && chmod +x $TEST_SCRIPT
+#  - cd $TEST_DIR && chmod +x $TEST_SCRIPT
 script:
   - cd $BUILD_DIR && docker build . --tag $TAG
 after_script:

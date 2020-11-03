@@ -1,0 +1,18 @@
+arch: s390x
+services:
+  - docker
+env:
+  global:
+#    - TEST_DIR="$PWD/test/5.0/"
+#    - TEST_SCRIPT="test.sh"
+    - BUILD_DIR="$PWD/6.0/alpine/"
+    - REPO="quay.io/ibmz/redis-s390x"
+    - TAG="$REPO:6.0"
+before_script:
+  - docker login quay.io -u $ROBOT -p $ROBOT_TOKEN
+  - cd $TEST_DIR && chmod +x $TEST_SCRIPT
+script:
+  - cd $BUILD_DIR && docker build . --tag $TAG
+after_script:
+#  - docker push $TAG
+#  - cd $TEST_DIR && bash $TEST_SCRIPT

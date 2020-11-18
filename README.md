@@ -1,26 +1,78 @@
-# https://github.com/docker-library/redis
+# What is Redis?
 
-## Maintained by: [the Docker Community](https://github.com/docker-library/redis)
+Redis is an open-source, networked, in-memory, key-value data store with optional durability. It is written in ANSI C. The development of Redis is sponsored by Redis Labs today; before that, it was sponsored by Pivotal and VMware. According to the monthly ranking by DB-Engines.com, Redis is the most popular key-value store. The name Redis means REmote DIctionary Server.
 
-This is the Git repo of the [Docker "Official Image"](https://github.com/docker-library/official-images#what-are-official-images) for [`redis`](https://hub.docker.com/_/redis/) (not to be confused with any official `redis` image provided by `redis` upstream). See [the Docker Hub page](https://hub.docker.com/_/redis/) for the full readme on how to use this Docker image and for information regarding contributing and issues.
+> [wikipedia.org/wiki/Redis](https://en.wikipedia.org/wiki/Redis)
 
-The [full image description on Docker Hub](https://hub.docker.com/_/redis/) is generated/maintained over in [the docker-library/docs repository](https://github.com/docker-library/docs), specifically in [the `redis` directory](https://github.com/docker-library/docs/tree/master/redis).
+# Security
 
-## See a change merged here that doesn't show up on Docker Hub yet?
+For the ease of accessing Redis from other containers via Docker networking, the "Protected mode" is turned off by default. This means that if you expose the port outside of your host (e.g., via `-p` on `docker run`), it will be open without a password to anyone. It is **highly** recommended to set a password (by supplying a config file) if you plan on exposing your Redis instance to the internet. For further information, see the following links about Redis security:
 
-For more information about the full official images change lifecycle, see [the "An image's source changed in Git, now what?" FAQ entry](https://github.com/docker-library/faq#an-images-source-changed-in-git-now-what).
+-	[Redis documentation on security](https://redis.io/topics/security)
+-	[Protected mode](https://redis.io/topics/security#protected-mode)
+-	[A few things about Redis security by antirez](http://antirez.com/news/96)
 
-For outstanding `redis` image PRs, check [PRs with the "library/redis" label on the official-images repository](https://github.com/docker-library/official-images/labels/library%2Fredis). For the current "source of truth" for [`redis`](https://hub.docker.com/_/redis/), see [the `library/redis` file in the official-images repository](https://github.com/docker-library/official-images/blob/master/library/redis).
+# How to use this image
 
----
+## start a redis instance
 
--	[![build status badge](https://img.shields.io/github/workflow/status/docker-library/redis/GitHub%20CI/master?label=GitHub%20CI)](https://github.com/docker-library/redis/actions?query=workflow%3A%22GitHub+CI%22+branch%3Amaster)
--	[![build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/update.sh/job/redis.svg?label=Automated%20update.sh)](https://doi-janky.infosiftr.net/job/update.sh/job/redis/)
+```console
+$ docker run --name some-redis -d quay.io/ibmz/redis:6.0
+```
 
-| Build | Status | Badges | (per-arch) |
-|:-:|:-:|:-:|:-:|
-| [![amd64 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/amd64/job/redis.svg?label=amd64)](https://doi-janky.infosiftr.net/job/multiarch/job/amd64/job/redis/) | [![arm32v5 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm32v5/job/redis.svg?label=arm32v5)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v5/job/redis/) | [![arm32v6 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm32v6/job/redis.svg?label=arm32v6)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v6/job/redis/) | [![arm32v7 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm32v7/job/redis.svg?label=arm32v7)](https://doi-janky.infosiftr.net/job/multiarch/job/arm32v7/job/redis/) |
-| [![arm64v8 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/arm64v8/job/redis.svg?label=arm64v8)](https://doi-janky.infosiftr.net/job/multiarch/job/arm64v8/job/redis/) | [![i386 build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/i386/job/redis.svg?label=i386)](https://doi-janky.infosiftr.net/job/multiarch/job/i386/job/redis/) | [![mips64le build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/mips64le/job/redis.svg?label=mips64le)](https://doi-janky.infosiftr.net/job/multiarch/job/mips64le/job/redis/) | [![ppc64le build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/redis.svg?label=ppc64le)](https://doi-janky.infosiftr.net/job/multiarch/job/ppc64le/job/redis/) |
-| [![s390x build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/multiarch/job/s390x/job/redis.svg?label=s390x)](https://doi-janky.infosiftr.net/job/multiarch/job/s390x/job/redis/) | [![put-shared build status badge](https://img.shields.io/jenkins/s/https/doi-janky.infosiftr.net/job/put-shared/job/light/job/redis.svg?label=put-shared)](https://doi-janky.infosiftr.net/job/put-shared/job/light/job/redis/) |
+## start with persistent storage
 
-<!-- THIS FILE IS GENERATED BY https://github.com/docker-library/docs/blob/master/generate-repo-stub-readme.sh -->
+```console
+$ docker run --name some-redis -d quay.io/ibmz/redis:6.0 redis-server --appendonly yes
+```
+
+If persistence is enabled, data is stored in the `VOLUME /data`, which can be used with `--volumes-from some-volume-container` or `-v /docker/host/dir:/data` (see [docs.docker volumes](https://docs.docker.com/engine/tutorials/dockervolumes/)).
+
+For more about Redis Persistence, see [http://redis.io/topics/persistence](http://redis.io/topics/persistence).
+
+## connecting via `redis-cli`
+
+```console
+$ docker run -it --network some-network --rm quay.io/ibmz/redis:6.0 redis-cli -h some-redis
+```
+
+## Additionally, If you want to use your own redis.conf ...
+
+You can create your own Dockerfile that adds a redis.conf from the context into /data/, like so.
+
+```dockerfile
+FROM quay.io/ibmz/redis:6.0
+COPY redis.conf /usr/local/etc/redis/redis.conf
+CMD [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+```
+
+Alternatively, you can mount a docker volume that contains the custom config file:
+
+```console
+$ docker run -v <MY_VOLUME>/redis.conf:/usr/local/etc/redis/redis.conf --name myredis quay.io/ibmz/redis:6.0 redis-server /usr/local/etc/redis/redis.conf
+```
+
+Where `<MY_VOLUME>` is the docker volume containing your `redis.conf` file. Using this method means that there is no need for you to have a Dockerfile for your redis container.
+
+
+# Image Variants
+
+The alpine-variant is currently the only published variant.
+
+## `redis:<version>`
+
+This image is based on the popular [Alpine Linux project](https://alpinelinux.org), available in [the `alpine` official image](https://hub.docker.com/_/alpine). Alpine Linux is much smaller than most distribution base images (~5MB), and thus leads to much slimmer images in general.
+
+This variant is highly recommended when final image size being as small as possible is desired. The main caveat to note is that it does use [musl libc](https://musl.libc.org) instead of [glibc and friends](https://www.etalabs.net/compare_libcs.html), so certain software might run into issues depending on the depth of their libc requirements. However, most software doesn't have an issue with this, so this variant is usually a very safe choice. See [this Hacker News comment thread](https://news.ycombinator.com/item?id=10782897) for more discussion of the issues that might arise and some pro/con comparisons of using Alpine-based images.
+
+To minimize image size, it's uncommon for additional related tools (such as `git` or `bash`) to be included in Alpine-based images. Using this image as a base, add the things you need in your own Dockerfile (see the [`alpine` image description](https://hub.docker.com/_/alpine/) for examples of how to install packages if you are unfamiliar).
+
+# License
+
+View [license information](http://redis.io/topics/license) for the software contained in this image.
+
+As with all Docker images, these likely also contain other software which may be under other licenses (such as Bash, etc from the base distribution, along with any direct or indirect dependencies of the primary software being contained).
+
+Some additional license information which was able to be auto-detected might be found in [the `repo-info` repository's `redis/` directory](https://github.com/docker-library/repo-info/tree/master/repos/redis).
+
+As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies with any relevant licenses for all software contained within.

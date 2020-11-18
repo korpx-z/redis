@@ -3,17 +3,14 @@ FROM quay.io/ibmz/alpine:3.12
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN addgroup -S -g 1000 redis && adduser -S -G redis -u 999 redis
 # alpine already has a gid 999, so we'll use the next id
-
 RUN apk add --no-cache \
 # grab su-exec for easy step-down from root
 		'su-exec>=0.2' \
 # add tzdata for https://github.com/docker-library/redis/issues/138
 		tzdata
-
 ENV REDIS_VERSION 5.0.10
 ENV REDIS_DOWNLOAD_URL http://download.redis.io/releases/redis-5.0.10.tar.gz
 ENV REDIS_DOWNLOAD_SHA e30a5e7d1593a715cdda2a82deb90190816d06c9d1dc1ef5b36874878c683382
-
 RUN set -eux; \
 	\
 	apk add --no-cache --virtual .build-deps \
@@ -89,13 +86,10 @@ RUN set -eux; \
 	\
 	redis-cli --version; \
 	redis-server --version
-
 RUN mkdir /data && chown redis:redis /data
 VOLUME /data
 WORKDIR /data
-
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
-
 EXPOSE 6379
 CMD ["redis-server"]

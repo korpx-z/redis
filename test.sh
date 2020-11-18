@@ -9,6 +9,6 @@ echo -e "\n $ANSI_YELLOW *** testing docker run - redis *** $ANSI_RESET \n"
 
 echo -e "$ANSI_YELLOW Download, test connection of redis: $ANSI_RESET"
 docker run -d --rm --name some-redis quay.io/ibmz/redis:5.0
-docker exec -i some-redis ping
+docker exec -i some-redis redis-cli ping
 
 echo -e "\n $ANSI_GREEN *** TEST COMPLETED SUCESSFULLY *** $ANSI_RESET \n"

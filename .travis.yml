@@ -5,9 +5,9 @@ env:
   global:
     - TEST_DIR="$PWD/"
     - TEST_SCRIPT="test.sh"
-    - BUILD_DIR="$PWD/5.0/alpine/"
+    - BUILD_DIR="$PWD/6.0/alpine/"
     - REPO="quay.io/ibmz/redis"
-    - TAG="$REPO:5.0"
+    - TAG="$REPO:6.0"
 before_script:
   - docker login quay.io -u $ROBOT -p $ROBOT_TOKEN
   - cd $TEST_DIR && chmod +x $TEST_SCRIPT
